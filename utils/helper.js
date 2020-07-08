@@ -1,13 +1,12 @@
 import AsyncStorage from '@react-native-community/async-storage'
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const NOTIFICATION_KEY = 'NOTIFICATION_KEY'
 
-export function clearLocalNotification() {
+export async function clearLocalNotification() {
     return AsyncStorage.removeItem(NOTIFICATION_KEY)
-        .then(Notifications.cancelAllScheduledNotificationsAsync)
+        .then(async () => await Notifications.cancelAllScheduledNotificationsAsync())
 }
 
 function createNotification() {
@@ -32,10 +31,10 @@ export function setLocalNotification() {
         .then((data) => {
             if (data === null) {
                 Permissions.getAsync(Permissions.NOTIFICATIONS)
-                    .then(({ status }) => {
+                    .then( async ({ status }) => {
                         if (status === 'granted') {
-                            Notifications.cancelAllScheduledNotificationsAsync()
-                            Notifications.scheduleNotificationAsync(createNotification())
+                            await Notifications.cancelAllScheduledNotificationsAsync()
+                            await Notifications.scheduleNotificationAsync(createNotification())
                             // the handler decides if the user will actually see the notification
                             // after it's been triggered
                             Notifications.setNotificationHandler({
@@ -46,7 +45,7 @@ export function setLocalNotification() {
                                 }),
                             })
 
-                            AsyncStorage.setItem(NOTIFICATION_KEY, JSON.stringify(true))
+                            await AsyncStorage.setItem(NOTIFICATION_KEY, JSON.stringify(true))
                         }
                     })
                     .catch((err) => console.log(err))
@@ -62,13 +61,11 @@ export const DEFAULT_DECKS = {
         questions: [{
             id: 0,
             question: 'Space is so vast because someone with long arms stretched it.',
-            answer: 'Whoever said that, sorry, that\'s not how space works!',
-            correctOption: 'Incorrect'
+            answer: 'Whoever said that, sorry, that\'s not how space works!'
         }, {
             id: 1,
             question: 'Sunsets on Mars are blue.',
-            answer: 'That\'s right! The light is filtered through fine dust in the Mars atmosphere.',
-            correctOption: 'Correct'
+            answer: 'That\'s right! The light is filtered through fine dust in the Mars atmosphere.'
         }]
     },
     1: {
@@ -77,13 +74,11 @@ export const DEFAULT_DECKS = {
         questions: [{
             id: 0,
             question: 'The abacus is the oldest known computing device.',
-            answer: 'Correct! The abacus was invented over 5000 years ago.',
-            correctOption: 'Correct'
+            answer: 'Correct! The abacus was invented over 5000 years ago.'
         }, {
             id: 1,
             question: 'ENIAC was the first electronic, programmable computer.',
-            answer: 'It was! The ENIAC was completed in 1945 and was the first programmable computer.',
-            correctOption: 'Correct'
+            answer: 'It was! The ENIAC was completed in 1945 and was the first programmable computer.'
         }]
     },
     2: {
@@ -93,17 +88,14 @@ export const DEFAULT_DECKS = {
             id: 0,
             question: 'Human beings are a distant relative of fungus.',
             answer: 'Correct! In evolutionary terms, the organism that lead to modern humans split from fungus around 600 million years ago.',
-            correctOption: 'Correct'
         }, {
             id: 1,
             question: 'All mushrooms are edible as food.',
             answer: 'Many types of mushroom should not be eaten and are dangerous to consume.',
-            correctOption: 'Incorrect'
         }, {
             id: 2,
             question: 'As a member of the plant kingdom, fungus plays an important role in the ecosystem.',
             answer: 'Fungus is actually in the kingom Fungi! Fungus is not a plant.',
-            correctOption: 'Incorrect'
         }]
     }
 }
@@ -113,11 +105,11 @@ export const DEFAULT_ANSWERS = {
         questions: [
             {
                 questionId: 0,
-                selectedOption: 'Incorrect'
+                selectedOption: ''
             },
             {
                 questionId: 1,
-                selectedOption: 'Correct'
+                selectedOption: ''
             }
         ]
     },
@@ -126,11 +118,11 @@ export const DEFAULT_ANSWERS = {
         questions: [
             {
                 questionId: 0,
-                selectedOption: 'Correct'
+                selectedOption: ''
             },
             {
                 questionId: 1,
-                selectedOption: 'Incorrect'
+                selectedOption: ''
             }
         ]
     },

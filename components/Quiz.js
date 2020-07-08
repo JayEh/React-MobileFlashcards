@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { createStackNavigator } from '@react-navigation/stack'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { addQuestionAnswer, deleteAnswers } from '../actions/user'
-import { setLocalNotification, clearLocalNotification } from '../utils/helper'
+import { setLocalNotification } from '../utils/helper'
 
 const Stack = createStackNavigator()
 
@@ -42,12 +42,9 @@ class Quiz extends Component {
     finalScoreView = () => {
         const { deck, questionAnswers } = this.props
         const totalQuestions = deck.questions.length
-        let correctAnswers = 0
-        questionAnswers.questions.forEach(q => {
-            const thisQuestion = deck.questions.filter(question => question.id === q.questionId)[0]
-            thisQuestion.correctOption === q.selectedOption ? correctAnswers++ : null
-        })
+        let correctAnswers = questionAnswers.questions.filter(q => q.selectedOption === "Correct").length
         const percentCorrect = Math.round(correctAnswers / totalQuestions * 100)
+
 
         return (
             <View style={styles.finalScore}>
@@ -85,9 +82,14 @@ class Quiz extends Component {
             selectedOption
         }))
 
-        // reset the daily notification when the user takes a quiz
-        // delete today's notification and add another for tomorrow
-        clearLocalNotification().then(setLocalNotification)
+        // this function will reset the daily notification when the user takes a quiz
+        // it will delete today's notification and add another for tomorrow
+        setLocalNotification()
+    }
+
+    goBack = () => {
+        const { navigation } = this.props
+        navigation.navigate('Deck', { deckId: this.props.deck.id })
     }
 
     render() {
@@ -115,6 +117,7 @@ class Quiz extends Component {
                         <Text style={styles.textHeader}>You're answering the {deck.name} quiz.</Text>  
                         <Text>Question {currentQuestionNumber} of {totalQuestions}.</Text>  
                         <Text style={[styles.text, styles.question]}>Your next question:</Text>
+
                         <Text style={styles.text}>{unansweredQuestion.question}</Text>
                         <View style={styles.buttonRow}>
                             <TouchableOpacity style={[styles.button, styles.correctNotSelected]} onPress={() => this.answerQuestion(unansweredQuestion.id, 'Correct')}>
@@ -127,6 +130,11 @@ class Quiz extends Component {
                         <Text style={styles.showAnswer} onPress={() => this.toggleAnswer()}>
                             Show the Answer
                         </Text>
+
+                        <TouchableOpacity onPress={() => this.goBack()}>
+                            <Text style={styles.goBack}>Go Back to Deck</Text>
+                        </TouchableOpacity>
+                        
                     </Fragment>
                 )}
 
@@ -153,7 +161,18 @@ function mapStateToProps({ decks, questionAnswers }, props) {
 const styles = StyleSheet.create({
     container: {
         flex:1,
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    content: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'column'
+    },
+    goBack: {
+        marginTop:200,
+        backgroundColor: "#DDDDDD",
+        padding: 10,
     },
     question: {
         fontWeight: 'bold'
@@ -162,9 +181,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginLeft:25,
         marginTop:55
-    },
-    goBack: {
-        color: '#052005'
     },
     button: {
         margin: 15,

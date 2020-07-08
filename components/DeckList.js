@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text } from 'react-native'
-import { getDecks, saveCardToDeck } from '../utils/helper'
+import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import { saveCardToDeck } from '../utils/helper'
 import { connect } from 'react-redux'
 
 class DeckList extends Component {
@@ -15,7 +15,6 @@ class DeckList extends Component {
         }))
 
         saveCardToDeck(deckId, question, answer)
-        alert('hello!')
     }
     
     render() {
@@ -24,12 +23,15 @@ class DeckList extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.textHeader}>Choose a deck to begin the quiz!</Text>
-                {Object.keys(decks).map((id) => (
-                    <View key={id}>
-                        <Text style={styles.text} onPress={() => navigation.navigate('Deck', { deckId: id })}>{ decks[id].name }</Text>
-                        <Text style={styles.cardCount}> {decks[id].questions.length} cards.</Text>
-                    </View>
-                ))}
+                
+                <ScrollView style={styles.scroll}>
+                    {Object.keys(decks).map((id) => (
+                        <View key={id}>
+                            <Text style={styles.text} onPress={() => navigation.navigate('Deck', { deckId: id })}>{ decks[id].name }</Text>
+                            <Text style={styles.cardCount}> {decks[id].questions.length} cards.</Text>
+                        </View>
+                    ))}
+                </ScrollView>
             </View>
         )
     }
@@ -41,6 +43,9 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#F5FCFF',
+    },
+    scroll: {
+        paddingHorizontal: 75
     },
     text: {
         fontSize: 20,

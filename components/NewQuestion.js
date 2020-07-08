@@ -7,8 +7,7 @@ import { getRandomId } from '../utils/helper'
 class NewQuestion extends Component {
     state = {
         question: '',
-        answer: '',
-        correctOption: ''
+        answer: ''
     }
 
     inputChanged = (field, value) => {
@@ -19,15 +18,14 @@ class NewQuestion extends Component {
         // get some initial details
         const { deckId } = this.props.route.params
         const { navigation, dispatch, decks } = this.props
-        const { question, answer, correctOption } = this.state
+        const { question, answer } = this.state
 
         // make a new object that is the new question
         const questionId = getRandomId()
         const newQuestion = {
             id: questionId,
             question,
-            answer,
-            correctOption
+            answer
         }
 
         // add the new card to the deck
@@ -42,9 +40,7 @@ class NewQuestion extends Component {
 
 
     render() {
-        const correctButtonStyle = this.state.correctOption === 'Correct' ? styles.correctSelected :  styles.correctNotSelected
-        const incorrectButtonStyle = this.state.correctOption === 'Incorrect' ? styles.incorrectSelected : styles.incorrectNotSelected
-        const submitDisabled = this.state.question.length === 0 || this.state.answer.length === 0 || this.state.correctOption.length === 0
+        const submitDisabled = this.state.question.length === 0 || this.state.answer.length === 0
 
         return (
             <View>
@@ -57,18 +53,6 @@ class NewQuestion extends Component {
                     value={this.state.question} 
                     onChangeText={text => this.inputChanged('question', text)}>
                 </TextInput>
-
-                <Text style={styles.subtitle}>What's the correct option?</Text>
-                
-                <View style={styles.buttonRow}>
-                    <TouchableOpacity onPress={() => this.inputChanged('correctOption', 'Correct')} style={[styles.button, correctButtonStyle]}>
-                        <Text>Correct</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => this.inputChanged('correctOption', 'Incorrect')} style={[styles.button, incorrectButtonStyle]}>
-                        <Text>Incorrect</Text>
-                    </TouchableOpacity>
-                </View>
 
                 <Text style={styles.subtitle}>What's the answer to your question?</Text>
                 <TextInput 
